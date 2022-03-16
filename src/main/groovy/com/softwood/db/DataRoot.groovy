@@ -26,12 +26,12 @@ class DataRoot {
 
         XThreads.executeSynchronized {
             if (root.isEmpty()) {
-                recordId = new AtomicLong(0)
+                recordId = new AtomicLong(1)
                 root.put ("idGenerator", recordId.get() )
             }
             else {
                 Optional idGen = getById("idGenerator")
-                recordId  = idGen.orElse(new AtomicLong(0) )
+                recordId  = idGen.orElse(new AtomicLong(1) )
                 root.put ("idGenerator", recordId )
             }
             root.putIfAbsent("dbVersion", "database v1.0")
