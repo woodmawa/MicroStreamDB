@@ -1,5 +1,6 @@
 package com.softwood.db
 
+import one.microstream.concurrency.XThreads
 import one.microstream.storage.embedded.types.EmbeddedStorage
 import one.microstream.storage.embedded.types.EmbeddedStorageManager
 
@@ -10,28 +11,33 @@ import java.util.concurrent.atomic.AtomicLong
 class DataRoot {
 
     private ConcurrentHashMap root = new ConcurrentHashMap()
-    private AtomicLong recordId = new AtomicLong(0)
+    private AtomicLong recordId
 
 
-    final EmbeddedStorageManager dbManager = EmbeddedStorage.start(
-            root,                  // root object
-            Paths.get("data") // storage directory
-    )
+    final EmbeddedStorageManager dbManager
 
     DataRoot () {
         super()
 
-        if (root.isEmpty()) {
-            recordId = new AtomicLong(0)
-            root.put ("idGenerator", recordId )
+        dbManager = EmbeddedStorage.start(
+                root,                  // root object
+                Paths.get("data") // storage directory
+        )
+
+        XThreads.executeSynchronized {
+            if (root.isEmpty()) {
+                recordId = new AtomicLong(0)
+                root.put ("idGenerator", recordId.get() )
+            }
+            else {
+                Optional idGen = getById("idGenerator")
+                recordId  = idGen.orElse(new AtomicLong(0) )
+                root.put ("idGenerator", recordId )
+            }
+            root.putIfAbsent("dbVersion", "database v1.0")
+            dbManager.store(root)
         }
-        else {
-            Optional idGen = getById("idGenerator")
-            recordId  = idGen.orElse(new AtomicLong(0) )
-            root.put ("idGenerator", recordId )
-        }
-        root.putIfAbsent(0, "database v1.0")
-        dbManager.store(root)
+
     }
 
     //empty db
@@ -42,7 +48,7 @@ class DataRoot {
 
     //save record in root map using incrementing id
     def save (record) {
-        long id = recordId.incrementAndGet()
+        Long id = recordId.incrementAndGet()
 
         if (record.hasProperty ('id')) {
             if (record.id == 0) {
@@ -50,8 +56,14 @@ class DataRoot {
             }
         }
 
-        root.putIfAbsent(id, record)
-        def result = dbManager.store(root)
+        def result
+        XThreads.executeSynchronized(() -> {
+            root.putIfAbsent(id.toString(), record)
+            root.put ("idGenerator", recordId ) //update with last id
+            result = dbManager.store(root)
+        })
+
+        result
     }
 
     def getRecordId (record){
@@ -75,7 +87,7 @@ class DataRoot {
 
     //get record from root map
     Optional getById (id) {
-        def match = root.get(id)
+        def match = root.get(id.toString())
         Optional.ofNullable(match)
     }
 

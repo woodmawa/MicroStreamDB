@@ -19,6 +19,7 @@ dependencies {
     implementation group: "one.microstream", name : "microstream-storage-embedded", version : "06.01.00-MS-GA"
     implementation group: "one.microstream", name : "microstream-storage-embedded-configuration", version : "06.01.00-MS-GA"
 
+    implementation group: 'com.fasterxml.uuid', name: 'java-uuid-generator', version: '4.0.1'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
