@@ -4,12 +4,12 @@ import com.softwood.persistence.api.SequenceGenerator
 
 import java.util.concurrent.atomic.AtomicLong
 
-class AutoSequenceGenerator implements SequenceGenerator {
+class AutoSequenceGeneratorImpl implements SequenceGenerator {
 
     @Delegate
     private AtomicLong value= new AtomicLong(1)
 
-    AutoSequenceGenerator(long initialValue = 1) {
+    AutoSequenceGeneratorImpl(long initialValue = 1) {
         value = new AtomicLong(initialValue)
     }
 
@@ -18,4 +18,13 @@ class AutoSequenceGenerator implements SequenceGenerator {
         return value.getAndIncrement()
     }
 
+    @Override
+    public def getCurrentId() {
+        return value.get()
+    }
+
+    @Override
+    void setCurrentId( id) {
+        value = new AtomicLong (id)
+    }
 }
