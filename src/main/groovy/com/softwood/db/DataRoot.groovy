@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicLong
 class DataRoot {
 
     private ConcurrentHashMap root = new ConcurrentHashMap()
-    private AtomicLong recordId
     private SequenceGenerator generator
 
 
