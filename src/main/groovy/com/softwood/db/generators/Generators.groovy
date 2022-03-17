@@ -12,9 +12,9 @@ class Generators {
 
     static SequenceGenerator newInstance (GeneratorType type) {
         switch (type) {
-            case GeneratorType.AUTO -> new AutoSequenceGeneratorImpl(1)
+            case GeneratorType.AUTO -> new AutoSequenceGeneratorImpl(0)
             case GeneratorType.UUID -> new GuidSequenceGeneratorImpl()
-            case GeneratorType.SEQUENCE -> new SequenceGeneratorImpl (1, 9)
+            case GeneratorType.SEQUENCE -> new SequenceGeneratorImpl (0, 9)
         }
     }
 }

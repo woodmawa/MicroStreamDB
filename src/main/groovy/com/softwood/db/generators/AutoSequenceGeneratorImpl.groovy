@@ -15,7 +15,7 @@ class AutoSequenceGeneratorImpl implements SequenceGenerator {
 
     @Override
     public def getNext() {
-        return value.getAndIncrement()
+        return value.incrementAndGet()
     }
 
     @Override

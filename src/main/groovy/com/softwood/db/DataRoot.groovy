@@ -107,7 +107,7 @@ class DataRoot {
         Optional.ofNullable(match)
     }
 
-    boolean dbShutdown () {
+    boolean shutdown () {
         dbManager.shutdown()
     }
 
